@@ -1,15 +1,16 @@
 from django.db import models
 
 
-# Create your models here.
-
 class Language(models.Model):
     name = models.CharField(max_length=2)
+
+    def __str__(self):
+        return f"<Language: {self.name}>"
 
 
 class User(models.Model):
     id = models.PositiveIntegerField(primary_key=True, unique=True)
-    language = models.ForeignKey(Language, on_delete=models.DO_NOTHING, db_column="language_id")
+    language = models.ForeignKey(Language, on_delete=models.DO_NOTHING)
     last_remind = models.PositiveIntegerField(null=True, help_text="Last message ID sent to remind drink water")
     start_silence = models.TimeField(null=True, db_column="start_silence_at")
     end_silence = models.TimeField(null=True, db_column="end_silence_at")
