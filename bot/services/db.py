@@ -1,4 +1,4 @@
-from django.db.models import Model
+from django.db.models import Model, QuerySet
 from rest_framework.serializers import ModelSerializer
 
 from ..models import Language, User
@@ -21,17 +21,29 @@ class ModelsDB:
 
     def get(self, pk):
         """
-        Returns single Model object if exists, otherwise returns `None`
+        Returns single Model object if exists.
 
         Args:
             pk: Model's Primary key.
+
+        Raises:
+            django.db.models.Model.DoesNotExist: If there is no model with that primary key.
         """
 
-        try:
-            user = self._model.objects.get(pk=pk)
-            return user
-        except self._model.DoesNotExist:
-            return None
+        user = self._model.objects.get(pk=pk)
+        return user
+
+    def get_all(self):
+        """
+        Returns all existing Models from database.
+
+        Returns:
+            QuerySet: Queryset with all Models if exists.
+        """
+
+        users = self._model.objects.all()
+
+        return users
 
     def create(self, data):
         """
@@ -101,20 +113,34 @@ class UsersDB(ModelsDB):
 
         return UserSerializer(instance=model, data=data_copy)
 
-    def get_as_dict(self, user_id: int):
+    def get_as_serializer(self, user_id: int):
         """
-        Gets User Model as dictionary if exists, otherwise returns `None`.
+        Gets User Model as dictionary if exists, otherwise returns empty `dict`.
 
         Returns:
-            dict: Dictionary with User Model fields as keys or None.
+            UserSerializer: Dictionary with User Model fields as keys or empty.
+
+        Raises:
+            django.db.models.Model.DoesNotExist: If there is no User with that user_id.
         """
 
         user = self.get(user_id)
 
-        if user is not None:
-            user = UserSerializer(user).data
+        return UserSerializer(user)
 
-        return user
+    def get_all_as_serializer(self):
+        """
+        Gets all User Models if exist, otherwise returns empty `list`.
+
+        Returns:
+             UserSerializer: UserSerializer with User Models.
+        """
+
+        users = self.get_all()
+
+        serializer = UserSerializer(users, many=True)
+
+        return serializer
 
 
 class LanguageDB(ModelsDB):
@@ -127,10 +153,13 @@ class LanguageDB(ModelsDB):
         return LanguageSerializer(instance=model, data=data)
 
     def get_by_name(self, name):
-        """Returns single Language object if exists, otherwise returns `None`"""
+        """
+        Returns single Language object if exists, otherwise returns `None`
 
-        try:
-            user = self._model.objects.get(name=name)
-            return user
-        except self._model.DoesNotExist:
-            return None
+        Raises:
+            django.db.models.Model.DoesNotExist: If there is no User with that user_id.
+        """
+
+        lang = self._model.objects.get(name=name)
+
+        return lang
