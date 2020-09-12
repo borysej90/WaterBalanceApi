@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                                                       null=True)),
                 ('has_reminding', models.BooleanField(default=False, help_text='If user has active reminding')),
                 ('language', models.ForeignKey(db_column='language_id', on_delete=django.db.models.deletion.DO_NOTHING,
-                                               to='persistence.language')),
+                                               to='bot.language')),
             ],
         ),
     ]
