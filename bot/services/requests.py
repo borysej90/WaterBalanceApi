@@ -1,9 +1,12 @@
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
+from ..models import Language
+
 
 class Validate:
     """Class used to validate requests data."""
+    AVAILABLE_LANGUAGES = None
 
     @staticmethod
     def user_request(data):
@@ -34,7 +37,13 @@ class Validate:
             ValidationError: If language does not exist.
         """
 
-        if language not in settings.AVAILABLE_LANGUAGES:
+        if Validate.AVAILABLE_LANGUAGES is None:
+            Validate.AVAILABLE_LANGUAGES = []
+
+            for lang in Language.objects.all():
+                Validate.AVAILABLE_LANGUAGES.append(lang.name)
+
+        if language not in Validate.AVAILABLE_LANGUAGES:
             raise ValidationError({'message': 'language with that name does not exists'})
 
     @staticmethod
