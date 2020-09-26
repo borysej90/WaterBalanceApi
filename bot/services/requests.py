@@ -1,8 +1,6 @@
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
-from ..models import Language
-
 
 class Validate:
     """Class used to validate requests data."""
@@ -38,6 +36,8 @@ class Validate:
         """
 
         if Validate.AVAILABLE_LANGUAGES is None:
+            from ..models import Language
+
             Validate.AVAILABLE_LANGUAGES = []
 
             for lang in Language.objects.all():
