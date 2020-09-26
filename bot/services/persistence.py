@@ -22,8 +22,10 @@ def save_user(user_id, data):
 
     data['language'] = Language.objects.get(name=data['language'])
 
-    if {'start_silence', 'end_silence'} <= set(data):
+    if 'start_silence' in data:
         data['start_silence'] = datetime.time.fromisoformat(data['start_silence'])
+
+    if 'end_silence' in data:
         data['end_silence'] = datetime.time.fromisoformat(data['end_silence'])
 
     user, created = User.objects.update_or_create(data, id=user_id)
@@ -53,8 +55,10 @@ def load_user(user_id):
 
     output['language'] = user.language.name
 
-    if {'start_silence', 'end_silence'} <= set(output):
+    if 'start_silence' in output:
         output['start_silence'] = output['start_silence'].isoformat()
+
+    if 'end_silence' in output:
         output['end_silence'] = output['end_silence'].isoformat()
 
     return output
